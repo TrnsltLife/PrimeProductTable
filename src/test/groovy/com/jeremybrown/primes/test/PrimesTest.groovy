@@ -47,5 +47,15 @@ class PrimesTest
 			assert actualP >= approxP : "Prime approximation over-reported primes: n:$actualN ~> p:$approxP (=$actualP) [diff:${actualP - approxP}]"
 		}
 	}
+	
+	@Test
+	public void testApproxLimitForPrimes()
+	{
+		//Test finding integer i above nth prime.
+		//Test based on data in the Primes table
+		for(int n=0; n<PRIMES.size(); n++)
+		//(n+1) because PRIMES indexing starts at 0 while nth prime "indexing" starts at 1
+		assert(Primes.approxLimitForPrimes(n+1) >= PRIMES[n])
+	}
 
 }

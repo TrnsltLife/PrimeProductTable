@@ -101,6 +101,11 @@ class Primes
 		return primes
 	}
 	
+	static List findPrimesEratosthenes(int numberOfPrimes)
+	{
+		return [-1]
+	}
+	
 	//Find approximately how many primes between 0 and n
 	//Because the coding challenge asks for the first n primes,
 	//instead of the usual "number of primes under integer i",
@@ -132,5 +137,44 @@ class Primes
 		
 		if(p < 1) {p = 1}
 		return p 
+	}
+	
+	//Given that we're looking for the nth prime,
+	//approximate what integer i will be greater than that prime.
+	//That way, we can use the integer i as input to a function
+	//that finds primes less than integer i (e.g. Sieve of Eratosthenes)
+	static long approxLimitForPrimes(long numberOfPrimes)
+	{
+		//First
+		long lowGuess = 0;
+		long guess = 1;
+		long highGuess = 1;
+		long limit = 1 << 62
+		//Quickly estimate by powers of 2
+		while(highGuess <= limit && approxPrimesUnder(highGuess) <= numberOfPrimes)
+		{
+			lowGuess = highGuess
+			highGuess = highGuess << 1
+		}
+		if(highGuess == numberOfPrimes) {return highGuess}
+		
+		//Then by halves between lowGuess and highGuess
+		while(lowGuess != highGuess)
+		{
+			guess = lowGuess + (highGuess - lowGuess) / 2
+			if(approxPrimesUnder(guess) < numberOfPrimes)
+			{
+				lowGuess = guess
+			}
+			else if(approxPrimesUnder(guess) > numberOfPrimes)
+			{
+				highGuess = guess
+			}
+			else
+			{
+				return guess
+			}
+		}
+		return highGuess
 	}
 }

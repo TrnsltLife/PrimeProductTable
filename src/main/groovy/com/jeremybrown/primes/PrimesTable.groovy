@@ -6,7 +6,8 @@ class PrimesTable
 	//The First 10,000 Primes
 	//(the 10,000th is 104,729)
 	//For more information on primes see http://primes.utm.edu/
-	public static final TEN_K_PRIMES = Collections.unmodifiableList([
+	public static final long MAX_PRIMES = 10_000
+	public static final PRIMES = Collections.unmodifiableList([
       2,     3,     5,     7,    11,    13,    17,    19,    23,    29,
      31,    37,    41,    43,    47,    53,    59,    61,    67,    71,
      73,    79,    83,    89,    97,   101,   103,   107,   109,   113,

@@ -19,8 +19,16 @@ class PrimeProductTable
 		}
 		
 		println("Print $n primes:")
+		List primes = Primes.findPrimes(n)
+		println(primes)
 		
+		println("Find primes specifying Method.TABLE:")
+		primes = Primes.findPrimes(n, Primes.Method.TABLE)
+		println(primes)
 		
+		println("Find primes using unimplemented Method.LEGENDRE:")
+		primes = Primes.findPrimes(n, Primes.Method.LEGENDRE)
+		println(primes)
 	}
 	
 	public static int parseArgs(String[] args)

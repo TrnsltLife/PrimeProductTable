@@ -8,9 +8,11 @@ class PrimeProductTable
 
 	public static void main(String[] args)
 	{
+		//Get the number of primes to print, or NO_PRIMES if there's an error or to print the usage statement.
 		int n = parseArgs(args);
 		
-		if(n == -1)
+		//Print the usage statement
+		if(n == NO_PRIMES)
 		{
 			printUsage()
 			System.exit(0)

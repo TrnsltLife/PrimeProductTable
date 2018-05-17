@@ -4,7 +4,7 @@ import static java.lang.Math.log
 
 class Primes
 {
-	public enum Method { TABLE, MODULUS, SIEVE_OF_ERATOSTHENES, SIEVE_OF_ATKIN, LEGENDRE, MEISSEL, LEHMER, LMO }
+	public enum Method { TABLE, MODULUS, SIEVE_OF_ERATOSTHENES, SIEVE_OF_SUNDARAM, SIEVE_OF_ATKIN, LEGENDRE, MEISSEL, LEHMER, LMO }
 	
 	static List findPrimes(int numberOfPrimes)
 	{
@@ -28,13 +28,14 @@ class Primes
 		{
 			case Method.TABLE: return findPrimesTable(numberOfPrimes);
 			case Method.MODULUS: return findPrimesModulus(numberOfPrimes)
-			case Method.SIEVE_OF_ERATOSTHENES: return findPrimesNotImplemented()
+			case Method.SIEVE_OF_ERATOSTHENES: return findPrimesEratosthenes(numberOfPrimes)
+			case Method.SIEVE_OF_SUNDARAM: return findPrimesNotImplemented()
 			case Method.SIEVE_OF_ATKIN: return findPrimesNotImplemented()
 			case Method.LEGENDRE: return findPrimesNotImplemented()
 			case Method.MEISSEL: return findPrimesNotImplemented()
 			case Method.LEHMER: return findPrimesNotImplemented()
 			case Method.LMO: return findPrimesNotImplemented()
-			default: return findPrimesNotImplemented()
+			default: return findPrimesTable(numberOfPrimes)
 		}
 	}
 	
@@ -44,6 +45,8 @@ class Primes
 		return [-1]
 	}
 	
+	//Find primes by looking them up in a table
+	//time O(N)
 	static List findPrimesTable(int numberOfPrimes)
 	{
 		//Return an empty list if no primes are asked for
@@ -59,6 +62,8 @@ class Primes
 		}
 	}
 	
+	//Find primes by factoring, using modulus operator
+	//time O(N sqrt(N))
 	static List findPrimesModulus(int numberOfPrimes)
 	{
 		//Return an empty list if no primes are asked for
@@ -77,6 +82,7 @@ class Primes
 			List list = [n-1, n+1]
 			for(m in list)
 			{
+				//Assume a number is prime, and disprove that if possible
 				boolean isPrime = true
 				//We only have to check up to sqrt(m) - anything above sqrt(m) will be the other half of a smaller factor
 				long mSqrt = Math.sqrt(m)
@@ -101,8 +107,47 @@ class Primes
 		return primes
 	}
 	
+	//Uses the Sieve of Eratosthenese method to find primes
+	//time O(N log log N)
+	//See: https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
 	static List findPrimesEratosthenes(int numberOfPrimes)
 	{
+		//Return an empty list if no primes are asked for
+		if(numberOfPrimes <= 0) {return []}
+		
+		long limit = approxLimitForPrimes(numberOfPrimes)
+		
+		long bits = limit / 2 + 2 //1 for division by 2, 1 to "shift" start index from 0 to 1
+		BitSet bitSet = new BitSet(bits) //false will be treated as prime, true treated as factorable
+		bitSet.clear() //BitSet is supposed to start all set to false but this wasn't happening for me. So, clear().
+		
+		//First prime is 2 which is even. Since our BitSet won't represent even numbers, add 2 to primes list now.
+		List primes = [2]
+		if(primes.size() == numberOfPrimes) {return primes}
+		
+		//Loop up to the integer limit, sieving for primes
+		for(int i=3; i<=limit; i+=2) //cover odd numbers, evens aren't represented in this BitSet
+		{
+			//Prime is false, factorable is true
+			//If the bit for i is still flagged as false (prime), 
+			//set i as one of the primes,
+			//and flag all multiples of i as true (factorable)
+			if(bitSet.get(i/2 as int) == false) //Divide integer i by 2 to get the index in the BitSet, e.g. 9/2 = 4.5 => 4
+			{
+				primes << i
+				if(primes.size() == numberOfPrimes) {return primes}
+				
+				//Flag all mutiples of i as true (factorable)
+				for(int j=i+i; j<=limit; j+=i)
+				{
+					if(j%2 != 0) //don't process even numbers
+					{
+						bitSet.set(j/2 as int, true)
+					}
+				}
+			}
+		}
+		if(primes) {return primes}
 		return [-1]
 	}
 	
@@ -143,7 +188,7 @@ class Primes
 	//approximate what integer i will be greater than that prime.
 	//That way, we can use the integer i as input to a function
 	//that finds primes less than integer i (e.g. Sieve of Eratosthenes)
-	static long approxLimitForPrimes(long numberOfPrimes)
+	static long approxLimitForPrimes(int numberOfPrimes)
 	{
 		//First
 		long lowGuess = 0;

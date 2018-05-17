@@ -20,7 +20,7 @@ class PrimeProductTable
 			System.exit(0)
 		}
 		
-		List primes = Primes.findPrimes(n)
+		List primes = Primes.findPrimes(n, Primes.Method.SIEVE_OF_ERATOSTHENES)
 		if(primes.size() > 0 && primes[0] != -1)
 		{
 			println(createPrimeProductTable(primes))
@@ -30,7 +30,7 @@ class PrimeProductTable
 	public static int parseArgs(String[] args)
 	{
 		//Parse and return the number of primes to display.
-		//Return -1 to signal printing the usage statement and exiting.
+		//Return -1 (NO_PRIMES) to signal printing the usage statement and exiting.
 		
 		//Were any args passed in on the command line?
 		if(args.size() > 0)

@@ -15,22 +15,20 @@ class PrimesTest
 		//Test the first 10,000 primes for equivalence between methods
 		int limit = PRIMES.size()
 		
-		//Get the list of 10,000 primes using the modulus method
-		ArrayList modulus = Primes.findPrimes(limit, Method.MODULUS)
-		
 		//Compare primes lists from modulus and table methods, counting down from 10,000 primes
-		for(int i=limit; i >= 0; i--)
+		for(int i=1; i <= limit; i*=10) //1, 10, 100, 1_000, 10_000
 		{
 			def table = Primes.findPrimes(i, Method.TABLE)
+			def modulus = Primes.findPrimes(i, Method.MODULUS)
+			def eratosthenes = Primes.findPrimes(i, Method.SIEVE_OF_ERATOSTHENES)
+			
 			assert table == modulus : "Primes for table and modulus do not match for $i primes\r\n" +
 				"table:   size: ${table.size()  } first: ${table[0]  } last: ${table[-1]  }\r\n" +
 				"modulus: size: ${modulus.size()} first: ${modulus[0]} last: ${modulus[-1]}\r\n"
 				
-			//Remove an element from the end of the modulus primes list
-			if(modulus.size())
-			{
-				modulus.remove(modulus.size() - 1)
-			}
+			assert table == modulus : "Primes for table and modulus do not match for $i primes\r\n" +
+				"table:        size: ${table.size()       } first: ${table[0]       } last: ${table[-1]       }\r\n" +
+				"eratosthenes: size: ${eratosthenes.size()} first: ${eratosthenes[0]} last: ${eratosthenes[-1]}\r\n"
 		}
 	}
 
@@ -54,8 +52,10 @@ class PrimesTest
 		//Test finding integer i above nth prime.
 		//Test based on data in the Primes table
 		for(int n=0; n<PRIMES.size(); n++)
-		//(n+1) because PRIMES indexing starts at 0 while nth prime "indexing" starts at 1
-		assert(Primes.approxLimitForPrimes(n+1) >= PRIMES[n])
+		{
+			//(n+1) because PRIMES indexing starts at 0 while nth prime "indexing" starts at 1
+			assert(Primes.approxLimitForPrimes(n+1) >= PRIMES[n])
+		}
 	}
 
 }

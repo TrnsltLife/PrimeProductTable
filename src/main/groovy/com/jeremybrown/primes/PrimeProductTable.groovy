@@ -6,34 +6,46 @@ class PrimeProductTable
 {
 	static final int N_PRIMES_DEFAULT = 10
 	static final int NO_PRIMES = -1
+	static final Primes.Method METHOD_DEFAULT = Primes.Method.TABLE
 	static final HELP_SWITCHES = ["?", "h", "help", "/?", "/h", "/help", "-?", "-h", "-help", "--help"].asImmutable()
+	static final METHOD_MAP = ["table":Primes.Method.TABLE, "factor":Primes.Method.MODULUS, "sieve":Primes.Method.SIEVE_OF_ERATOSTHENES]
 
 	public static void main(String[] args)
 	{
 		//Get the number of primes to print, or NO_PRIMES if there's an error or to print the usage statement.
-		int n = parseArgs(args);
+		def command = [nPrimes:N_PRIMES_DEFAULT, method:METHOD_DEFAULT]
+		parseArgs(args, command);
 		
 		//Print the usage statement
-		if(n == NO_PRIMES)
+		if(command.nPrimes == NO_PRIMES)
 		{
 			printUsage()
 			System.exit(0)
 		}
 		
-		List primes = Primes.findPrimes(n, Primes.Method.SIEVE_OF_ERATOSTHENES)
+		println("Printing ${command.nPrimes} prime number${command.nPrimes>1?'s':''} using the ${command.method} method.")
+		List primes = Primes.findPrimes(command.nPrimes, command.method)
 		if(primes.size() > 0 && primes[0] != -1)
 		{
 			println(createPrimeProductTable(primes))
 		}
 	}
 	
-	public static int parseArgs(String[] args)
+	public static void parseArgs(String[] args, Map command)
 	{
 		//Parse and return the number of primes to display.
 		//Return -1 (NO_PRIMES) to signal printing the usage statement and exiting.
+		command.nPrimes = N_PRIMES_DEFAULT
+		command.method = METHOD_DEFAULT
 		
 		//Were any args passed in on the command line?
-		if(args.size() > 0)
+		if(args.size() > 2)
+		{
+			System.err.println("Error: Too many parameters.")
+			command.nPrimes = NO_PRIMES
+			return
+		}
+		else if(args.size() >= 1)
 		{
 			//If the first one is an integer...
 			if(args[0].isInteger())
@@ -43,32 +55,69 @@ class PrimeProductTable
 				if(n <= 0)
 				{
 					System.err.println("Error: <number-of-primes> must be >= 1")
-					return NO_PRIMES
+					command.nPrimes = NO_PRIMES
+					return
 				}
-				//Otherwise return it. That's how many primes we want to display.
-				return n
+				
+				//Make sure there aren't any following arguments.
+				if(args.size() > 1)
+				{
+					System.err.println("Error: Too many parameters.")
+					command.nPrimes = NO_PRIMES
+					return
+				}
+				
+				//That's how many primes we want to display.
+				command.nPrimes = n
+				return
+			}
+			else if(METHOD_MAP.keySet().contains(args[0]))
+			{
+				command.method = METHOD_MAP[args[0]]
 			}
 			//If it's some variant of a command asking for help...
 			else if(HELP_SWITCHES.contains(args[0]))
 			{
 				//...print the usage command and exit
-				return NO_PRIMES
+				command.nPrimes = NO_PRIMES
+				return
 			}
 			//If the first argument is something else
 			else
 			{
 				System.err.println("Error: Invalid argument " + args[0])
-				return NO_PRIMES
+				command.nPrimes = NO_PRIMES
+				return
+			}
+		}
+		//If there's a second argument it should be a number
+		if(args.size() >= 2)
+		{
+			//If the argument is an integer...
+			if(args[1].isInteger())
+			{
+				int n = Integer.parseInt(args[1])
+				//Make sure it's not an invalid number of primes
+				if(n <= 0)
+				{
+					System.err.println("Error: <number-of-primes> must be >= 1")
+					command.nPrimes = NO_PRIMES
+					return
+				}
+				//That's how many primes we want to display.
+				command.nPrimes = n
+				return
 			}
 		}
 		//Use the default number of primes
-		return N_PRIMES_DEFAULT
+		return
 	}
 	
 	static void printUsage()
 	{
-		println("PrimeProductTable <number-of-primes>")
-		println("                  <number-of-primes>: default=10")
+		println("PrimeProductTable [<method>] [<number-of-primes>]")
+		println("                              <number-of-primes>: default=10")
+		println("                   <method>: table|factor|sieve : default=table")
 	}
 	
 	static String createPrimeProductTable(List primes)

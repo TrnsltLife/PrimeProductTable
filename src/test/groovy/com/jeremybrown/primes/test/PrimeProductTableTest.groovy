@@ -16,26 +16,93 @@ class PrimeProductTableTest
 		//Test the command line parsing
 		
 		//No args. Defaults to N_PRIMES_DEFAULT (10)
-		assert(PrimeProductTable.parseArgs([] as String[]) == PrimeProductTable.N_PRIMES_DEFAULT)
+		def command = newCommand()
+		PrimeProductTable.parseArgs([] as String[], command)
+		assert(command.nPrimes == PrimeProductTable.N_PRIMES_DEFAULT)
 		
 		//Different options for display help. Returns NO_PRIMES (-1)
 		for(swtch in PrimeProductTable.HELP_SWITCHES)
 		{
-			assert(PrimeProductTable.parseArgs([swtch] as String[]) == PrimeProductTable.NO_PRIMES)
+			command = newCommand()
+			PrimeProductTable.parseArgs([swtch] as String[], command)
+			assert(command.nPrimes == PrimeProductTable.NO_PRIMES)
 		}
 		
 		//Not a parseable integer
-		assert(PrimeProductTable.parseArgs(["12b"] as String[]) == PrimeProductTable.NO_PRIMES)
+		command = newCommand()
+		PrimeProductTable.parseArgs(["12b"] as String[], command)
+		assert(command.nPrimes == PrimeProductTable.NO_PRIMES)
 
 		//Less than 1 prime requested
-		assert(PrimeProductTable.parseArgs(["0"] as String[]) == PrimeProductTable.NO_PRIMES)
-		assert(PrimeProductTable.parseArgs(["-1"] as String[]) == PrimeProductTable.NO_PRIMES)
-		assert(PrimeProductTable.parseArgs(["-2"] as String[]) == PrimeProductTable.NO_PRIMES)
+		command = newCommand()
+		PrimeProductTable.parseArgs(["0"] as String[], command)
+		assert(command.nPrimes == PrimeProductTable.NO_PRIMES)
+		
+		command = newCommand()
+		PrimeProductTable.parseArgs(["-1"] as String[], command)
+		assert(command.nPrimes == PrimeProductTable.NO_PRIMES)
+		
+		command = newCommand()
+		PrimeProductTable.parseArgs(["-2"] as String[], command)
+		assert(command.nPrimes == PrimeProductTable.NO_PRIMES)
 		
 		//A parseable integer
-		assert(PrimeProductTable.parseArgs(["1"] as String[]) == 1)
-		assert(PrimeProductTable.parseArgs(["36"] as String[]) == 36)
-		assert(PrimeProductTable.parseArgs(["187"] as String[]) == 187)
+		command = newCommand()
+		PrimeProductTable.parseArgs(["1"] as String[], command)
+		assert(command.nPrimes == 1)
+
+		command = newCommand()
+		PrimeProductTable.parseArgs(["36"] as String[], command)
+		assert(command.nPrimes == 36)
+
+		command = newCommand()
+		PrimeProductTable.parseArgs(["187"] as String[], command)
+		assert(command.nPrimes == 187)
+		
+		//Test arguments for a primes method
+		command = newCommand()
+		PrimeProductTable.parseArgs([""] as String[], command)
+		assert(command.method == Primes.Method.TABLE)
+		
+		command = newCommand()
+		PrimeProductTable.parseArgs(["sieve"] as String[], command)
+		assert(command.method == Primes.Method.SIEVE_OF_ERATOSTHENES)
+
+		command = newCommand()
+		PrimeProductTable.parseArgs(["factor"] as String[], command)
+		assert(command.method == Primes.Method.MODULUS)
+		
+		//Test arguments for a primes method when combined with a number of primes
+		command = newCommand()
+		PrimeProductTable.parseArgs(["13"] as String[], command)
+		assert(command.method == Primes.Method.TABLE)
+		assert(command.nPrimes == 13)
+
+		command = newCommand()
+		PrimeProductTable.parseArgs(["table", "15"] as String[], command)
+		assert(command.method == Primes.Method.TABLE)
+		assert(command.nPrimes == 15)
+
+		command = newCommand()
+		PrimeProductTable.parseArgs(["sieve", "20"] as String[], command)
+		assert(command.method == Primes.Method.SIEVE_OF_ERATOSTHENES)
+		assert(command.nPrimes == 20)
+
+		command = newCommand()
+		PrimeProductTable.parseArgs(["factor", "30"] as String[], command)
+		assert(command.method == Primes.Method.MODULUS)
+		assert(command.nPrimes == 30)
+		
+		//Test wrong order
+		command = newCommand()
+		PrimeProductTable.parseArgs(["40", "factor"] as String[], command)
+		assert(command.method == Primes.Method.TABLE)
+		assert(command.nPrimes == -1)
+	}
+	
+	public Map newCommand()
+	{
+		return [nPrimes:PrimeProductTable.N_PRIMES_DEFAULT, method:PrimeProductTable.METHOD_DEFAULT]
 	}
 
 	@Test

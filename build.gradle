@@ -25,3 +25,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+test {
+	testLogging {
+		//Allow showing standard out and error from tests
+		showStandardStreams = true
+	}
+}

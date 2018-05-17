@@ -1,9 +1,7 @@
 package com.jeremybrown.primes.test
 
 import com.jeremybrown.primes.*
-
 import static org.junit.Assert.*
-
 import org.junit.Test
 
 class PrimeProductTableTest

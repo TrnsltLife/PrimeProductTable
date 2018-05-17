@@ -1,5 +1,7 @@
 package com.jeremybrown.primes
 
+import groovy.json.StringEscapeUtils
+
 class PrimeProductTable
 {
 	static final int N_PRIMES_DEFAULT = 10
@@ -18,21 +20,11 @@ class PrimeProductTable
 			System.exit(0)
 		}
 		
-		println("Print $n primes:")
 		List primes = Primes.findPrimes(n)
-		println(primes)
-		
-		println("Find primes specifying Method.TABLE:")
-		primes = Primes.findPrimes(n, Primes.Method.TABLE)
-		println(primes)
-		
-		println("Find primes using unimplemented Method.LEGENDRE:")
-		primes = Primes.findPrimes(n, Primes.Method.LEGENDRE)
-		println(primes)
-		
-		println("Find primes using Method.MODULUS:")
-		primes = Primes.findPrimes(n, Primes.Method.MODULUS)
-		println(primes)
+		if(primes.size() > 0 && primes[0] != -1)
+		{
+			println(createPrimeProductTable(primes))
+		}
 	}
 	
 	public static int parseArgs(String[] args)
@@ -77,5 +69,58 @@ class PrimeProductTable
 	{
 		println("PrimeProductTable <number-of-primes>")
 		println("                  <number-of-primes>: default=10")
+	}
+	
+	static String createPrimeProductTable(List primes)
+	{
+		if(primes.size() == 0 || primes[0] == -1)
+		{
+			return ""
+		}
+		
+		StringBuffer out = new StringBuffer()
+		String EOL = System.lineSeparator()
+		
+		//Find the longest prime product, count its digits
+		long max = primes[-1]
+		max*=max
+		String sMax = "" + max
+		int maxDigits = sMax.length() + 1 //+1 for space between numbers
+		
+		//This will be the format for all the numbers
+		String format = "%" + maxDigits + "d"
+		
+		//Print the header row, including list of the prime numbers to multiply
+		int limit = primes.size()
+		out.append(" " * maxDigits + "|")
+		StringBuffer sb = new StringBuffer()
+		for(int c=0; c<limit; c++)
+		{
+			sb.append(String.format(format, primes[c]))
+		}
+		String header = sb.toString()
+		out.append(header+EOL)
+		
+		//Print the header row's underline
+		out.append("-" * maxDigits)
+		out.append("+")
+		out.append("-" * header.length()+EOL)
+		
+		//Print the multiplication table by rows and columns, including labels of prime numbers to multiply
+		for(int r=0; r<limit; r++)
+		{
+			//Print row label and | separator
+			out.append(String.format("%" + maxDigits-1 + "d" + "|", primes[r]))
+			
+			//Print all multiplication for this row
+			for(int c=0; c<limit; c++)
+			{
+				long value = primes[r] * primes[c]
+				out.append(String.format(format, value))
+			}
+			out.append(EOL)
+		}
+		
+		return out.toString()
 	}
 }

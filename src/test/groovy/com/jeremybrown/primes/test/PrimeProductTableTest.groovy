@@ -12,6 +12,8 @@ class PrimeProductTableTest
 	@Test
 	public void testParseArgs()
 	{
+		//Test the command line parsing
+		
 		//No args. Defaults to N_PRIMES_DEFAULT (10)
 		assert(PrimeProductTable.parseArgs([] as String[]) == PrimeProductTable.N_PRIMES_DEFAULT)
 		
@@ -33,7 +35,6 @@ class PrimeProductTableTest
 		assert(PrimeProductTable.parseArgs(["1"] as String[]) == 1)
 		assert(PrimeProductTable.parseArgs(["36"] as String[]) == 36)
 		assert(PrimeProductTable.parseArgs(["187"] as String[]) == 187)
-		
 	}
 
 }

@@ -19,6 +19,8 @@ class PrimeProductTable
 		}
 		
 		println("Print $n primes:")
+		
+		
 	}
 	
 	public static int parseArgs(String[] args)

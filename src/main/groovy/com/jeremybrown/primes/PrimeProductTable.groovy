@@ -29,6 +29,10 @@ class PrimeProductTable
 		println("Find primes using unimplemented Method.LEGENDRE:")
 		primes = Primes.findPrimes(n, Primes.Method.LEGENDRE)
 		println(primes)
+		
+		println("Find primes using Method.MODULUS:")
+		primes = Primes.findPrimes(n, Primes.Method.MODULUS)
+		println(primes)
 	}
 	
 	public static int parseArgs(String[] args)

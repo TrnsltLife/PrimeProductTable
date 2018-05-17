@@ -27,7 +27,7 @@ class Primes
 		switch(method)
 		{
 			case Method.TABLE: return findPrimesTable(numberOfPrimes);
-			case Method.MODULUS: return findPrimesNotImplemented()
+			case Method.MODULUS: return findPrimesModulus(numberOfPrimes)
 			case Method.SIEVE_OF_ERATOSTHENES: return findPrimesNotImplemented()
 			case Method.SIEVE_OF_ATKIN: return findPrimesNotImplemented()
 			case Method.LEGENDRE: return findPrimesNotImplemented()
@@ -46,6 +46,9 @@ class Primes
 	
 	static List findPrimesTable(int numberOfPrimes)
 	{
+		//Return an empty list if no primes are asked for
+		if(numberOfPrimes <= 0) {return []}
+		
 		if(numberOfPrimes <= PrimesTable.MAX_PRIMES)
 		{
 			return PrimesTable.PRIMES[0..<numberOfPrimes]
@@ -54,6 +57,48 @@ class Primes
 		{
 			return [-1]
 		}
+	}
+	
+	static List findPrimesModulus(int numberOfPrimes)
+	{
+		//Return an empty list if no primes are asked for
+		if(numberOfPrimes <= 0) {return []}
+
+		//Since we're looking for at least one prime, start with 2 in the list
+		List primes = [2]
+		
+		//Add 3 to the list if we're looking for 2+ primes
+		if(numberOfPrimes >= 2) { primes << 3}
+		
+		//Loop upwards, skipping upwards by 6
+		for(long n=6; primes.size() < numberOfPrimes; n+=6)
+		{
+			//Check n-1 and n+1 for primeness
+			List list = [n-1, n+1]
+			for(m in list)
+			{
+				boolean isPrime = true
+				//We only have to check up to sqrt(m) - anything above sqrt(m) will be the other half of a smaller factor
+				long mSqrt = Math.sqrt(m)
+				//We already factored out 2 and 3 by skipping by 6 and using n-1 and n+1
+				//Start from 5 skipping by 2 (odds) and check for modulo
+				//Source: http://primes.utm.edu/notes/faq/six.html
+				for(long factor=5; factor<=mSqrt; factor+=2)
+				{
+					if(m % factor == 0) {isPrime = false; break}
+				}
+				if(isPrime) 
+				{
+					primes << m
+					if(primes.size() == numberOfPrimes)
+					{
+						return primes
+					}
+				}
+			}
+		}
+		
+		return primes
 	}
 	
 	//Find approximately how many primes between 0 and n

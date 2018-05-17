@@ -23,7 +23,8 @@ class PrimeProductTable
 			System.exit(0)
 		}
 		
-		println("Printing ${command.nPrimes} prime number${command.nPrimes>1?'s':''} using the ${command.method} method.")
+		println("Printing a multiplication table of the first ${command.nPrimes} prime number${command.nPrimes>1?'s':''},")
+		println("using the ${command.method} method to find the primes.\r\n")
 		List primes = Primes.findPrimes(command.nPrimes, command.method)
 		if(primes.size() > 0 && primes[0] != -1)
 		{
